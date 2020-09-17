@@ -79,8 +79,6 @@ def insert_datalake(file_content, user, key, authurl, container_name,
 
     if SwiftService({}).stat(container_name)["object"] is None:
         conn.put_container(container_name)
-    # Gérer l'atomicité de cette partie #
-
     retry = 0
     while True:
         try:

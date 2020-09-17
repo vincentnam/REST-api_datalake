@@ -1,0 +1,5 @@
+flask
+werkzeug
+flask_cors
+pymongo
+python-swiftclient

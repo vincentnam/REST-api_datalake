@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 from flask_cors import CORS, cross_origin
 from pymongo import MongoClient
@@ -7,7 +7,7 @@ from swiftclient.service import SwiftService
 import datetime
 app = Flask(__name__)
 CORS(app,support_credentials = True)
-
+from influxdb_client import InfluxDBClient
 
 def get_id(mongodb_url):
     mongo_forid_co = MongoClient(mongodb_url)
@@ -149,6 +149,34 @@ def upload_file():
 
         return "File uploaded"
     return "Error"
+@app.route('/sensors_data', methods=['GET'])
+def get_influx_data_sensor(org="test", bucket="test"):
+
+    influx_client = InfluxDBClient(url="http://localhost:9999",
+                                   token="nfd23prECgPsUjNkwPZ95L6sw74u5dNAwUy2ChMp9giyD_Bor7Hbnvp3W1hMaqN2Qrk0J_oyaIUtpZpcEXcohQ==",
+                                                 org=org)
+    query_api = influx_client.query_api()
+    query = 'from(bucket:"test")|> range(start: -141400080m)|> group() |> filter(fn:(r) => r._measurement == "humidity")' \
+            '|> filter(fn:(r) => r.uri == "u4/302/humidity/ilot2")'
+    result = query_api.query(org=org, query=query)
+    results = {}
+    aux = 0
+    val_min = None
+    val_max = None
+    for table in result:
+        for record in table.records:
+            if record["uri"] not in results:
+                results[record["uri"]]={"id":record["uri"],"values":[{"val_min":val_min, "val_max":val_max}]}
+            results[record["uri"]]["values"].append({"value":record.get_value(),"value_unit": record["value_units"], "date":datetime.datetime.timestamp(record["_time"]) })
+            if val_max is None or record.get_value() > val_max :
+                val_max = record.get_value()
+            if val_min is None or record.get_value()<val_min:
+                val_min = record.get_value()
+    for uri in results:
+        results[uri]["values"][0]["val_min"]=val_min
+        results[uri]["values"][0]["val_max"]=val_max
+
+    return results
 
 
 if __name__ == '__main__':

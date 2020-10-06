@@ -163,6 +163,9 @@ def upload_file():
 
         return "File uploaded"
     return "Error"
+
+
+@cross_origin(supports_credentials=True)
 @app.route('/sensors_data', methods=['GET'])
 def get_influx_data_sensor(org="test", bucket="test"):
 

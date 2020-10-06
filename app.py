@@ -9,7 +9,8 @@ app = Flask(__name__)
 CORS(app,support_credentials = True)
 from influxdb_client import InfluxDBClient
 
-
+globals()["INFLUXDB_URI"] = "http://141.115.103.33:9999"
+globals()["SWIFT_URI"] = "http://141.115.103.30"
 def build_preflight_response():
     response = make_response()
     response.headers.add("Access-Control-Allow-Origin", "*")
@@ -134,7 +135,7 @@ def insert_datalake(file_content, user, key, authurl, container_name,
 def upload_file():
     user = 'test:tester'
     key = 'testing'
-    authurl = "http://127.0.0.1:8080/auth/v1.0"
+    authurl = globals()["SWIFT_URI"] + ":8080/auth/v1.0"
     container_name= "test_ui-react"
     # check if the post request has the file part
     if 'file' not in request.files:
@@ -169,8 +170,8 @@ def upload_file():
 @app.route('/sensors_data', methods=['GET'])
 def get_influx_data_sensor(org="test", bucket="test"):
 
-    influx_client = InfluxDBClient(url="http://localhost:9999",
-                                   token="nfd23prECgPsUjNkwPZ95L6sw74u5dNAwUy2ChMp9giyD_Bor7Hbnvp3W1hMaqN2Qrk0J_oyaIUtpZpcEXcohQ==",
+    influx_client = InfluxDBClient(url=globals()["INFLUXDB_URI"],
+                                   token="dpVzJpGpdTiNhjHLKOWpXf8OlY-rZUwi4Cvd10kPU86upOKBRO_TA5R6PClkVKjGj_TIXQGAm5g27wDggHJHcw==",
                                                  org=org)
     query_api = influx_client.query_api()
     query = 'from(bucket:"test")|> range(start: -141400080m)|> group() |> filter(fn:(r) => r._measurement == "humidity")' \

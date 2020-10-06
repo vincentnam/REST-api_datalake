@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from werkzeug.utils import secure_filename
 from flask_cors import CORS, cross_origin
 from pymongo import MongoClient
@@ -8,6 +8,20 @@ import datetime
 app = Flask(__name__)
 CORS(app,support_credentials = True)
 from influxdb_client import InfluxDBClient
+
+
+def build_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
+
+
+def build_actual_response(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
 
 def get_id(mongodb_url):
     mongo_forid_co = MongoClient(mongodb_url)
@@ -175,8 +189,7 @@ def get_influx_data_sensor(org="test", bucket="test"):
     for uri in results:
         results[uri]["values"][0]["val_min"]=val_min
         results[uri]["values"][0]["val_max"]=val_max
-
-    return results
+    return build_actual_response(jsonify(results))
 
 
 if __name__ == '__main__':

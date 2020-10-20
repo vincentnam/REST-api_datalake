@@ -3,3 +3,4 @@ werkzeug
 flask_cors
 pymongo
 python-swiftclient
+influxdb_client

@@ -1,4 +1,6 @@
-from flask import Flask, request, jsonify, make_response
+import io
+
+from flask import Flask, request, jsonify, make_response, flash
 from werkzeug.utils import secure_filename
 from flask_cors import CORS, cross_origin
 from pymongo import MongoClient
@@ -6,7 +8,7 @@ import swiftclient.service
 from swiftclient.service import SwiftService
 import datetime
 app = Flask(__name__)
-CORS(app,support_credentials = True)
+# CORS(app)
 from influxdb_client import InfluxDBClient
 
 globals()["INFLUXDB_URI"] = "http://141.115.103.33:9999"
@@ -128,9 +130,15 @@ def insert_datalake(file_content, user, key, authurl, container_name,
             if retry > 3:
                 return None
 
+@app.after_request
+def append_cors_origin(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
 
 
-@cross_origin(supports_credentials=True)
+# @cross_origin()#supports_credentials=True)
 @app.route('/upload_file', methods=['POST'])
 def upload_file():
     user = 'test:tester'
@@ -139,31 +147,46 @@ def upload_file():
     container_name= "test_ui-react"
     # check if the post request has the file part
     if 'file' not in request.files:
-        return "No file to upload"
+        return jsonify(message="No file to upload")
+    file = request.files["file"]
+    if file.filename=='':
+        flash('No selected file')
+        return "No file"
+    filename = secure_filename(file.filename)
+
+    file.save(filename)
+    return jsonify(message= "Ok")
+
+
+
         #return redirect(request.url)
-    file = request.files['file']
+    # file = request.files['file']
+    # with open("~/test.truc","w+") as fp :
+    #     fp.write(file)
     # if user does not select file, browser also
     # submit an empty part without filename
-    if file.filename == '':
 
-        return "No file selected"
-    if file:
-        filename = secure_filename(file.filename)
-        # upload in openstack swift / mongodb
-        insert_datalake(file, user, key, authurl, container_name,
-                        application="UI-react_test",
-                        content_type= file.content_type,
-                        mongodb_url="127.0.0.1:27017",
-                        )
 
-        print(file.filename)
-        print(file.name)
-        print(file.content_type)
-        print(file.content_length)
-        print(file.headers)
-
-        return "File uploaded"
-    return "Error"
+    # if file.filename == '':
+    #
+    #     return "No file selected"
+    # if file:
+    #     filename = secure_filename(file.filename)
+    #     # upload in openstack swift / mongodb
+    #     insert_datalake(file, user, key, authurl, container_name,
+    #                     application="UI-react_test",
+    #                     content_type= file.content_type,
+    #                     mongodb_url="127.0.0.1:27017",
+    #                     )
+    #
+    #     print(file.filename)
+    #     print(file.name)
+    #     print(file.content_type)
+    #     print(file.content_length)
+    #     print(file.headers)
+    #
+    #     return "File uploaded"
+    # return "Error"
 
 
 @cross_origin()

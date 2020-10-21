@@ -155,6 +155,9 @@ def upload_file():
     filename = secure_filename(file.filename)
 
     file.save(filename)
+
+
+    
     return jsonify(message= "Ok")
 
 

@@ -137,6 +137,12 @@ def append_cors_origin(response):
     response.headers.add('Access-Control-Allow-Methods', "*")
     return response
 
+@app.before_request
+def append_cors_origin(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
 
 # @cross_origin()#supports_credentials=True)
 @app.route('/upload_file', methods=['POST'])

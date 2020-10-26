@@ -9,25 +9,11 @@ from swiftclient.service import SwiftService
 import datetime
 
 app = Flask(__name__)
-# CORS(app)
+CORS(app)
 from influxdb_client import InfluxDBClient
 
 globals()["INFLUXDB_URI"] = "http://141.115.103.33:9999"
 globals()["SWIFT_URI"] = "http://141.115.103.30"
-
-
-def build_preflight_response():
-    response = make_response()
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add('Access-Control-Allow-Headers', "*")
-    response.headers.add('Access-Control-Allow-Methods', "*")
-    return response
-
-
-def build_actual_response(response):
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
-
 
 def get_id(mongodb_url):
     mongo_forid_co = MongoClient(mongodb_url)
@@ -133,19 +119,19 @@ def insert_datalake(file_content, user, key, authurl, container_name,
             if retry > 3:
                 return None
 
+#
+# @app.after_request
+# def append_cors_origin(response):
+#     response.headers.add("Access-Control-Allow-Origin", "*")
+#     response.headers.add('Access-Control-Allow-Headers', "*")
+#     response.headers.add('Access-Control-Allow-Methods', "*")
+#     return response
+#
+#
 
-@app.after_request
-def append_cors_origin(response):
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add('Access-Control-Allow-Headers', "*")
-    response.headers.add('Access-Control-Allow-Methods', "*")
-    return response
 
 
-
-
-
-# @cross_origin()#supports_credentials=True)
+@cross_origin()#supports_credentials=True)
 @app.route('/upload_file', methods=['POST'])
 def upload_file():
     user = 'test:tester'

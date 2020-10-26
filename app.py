@@ -9,12 +9,29 @@ from swiftclient.service import SwiftService
 import datetime
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+# CORS(app, resources={r"/*": {"origins": "*"}})
 from influxdb_client import InfluxDBClient
 app.config['CORS_HEADERS'] = 'Content-Type'
 globals()["INFLUXDB_URI"] = "http://141.115.103.33:9999"
 globals()["SWIFT_URI"] = "http://141.115.103.30"
+config = {
+    'ORIGINS': [
+        'http://localhost:3000',  # React
+        'http://127.0.0.1:3000',  # React
+    ]}
+CORS(app, resources={
+        r'/api/*': {
+            "Access-Control-Allow-Origin": config["ORIGINS"],
+            "Access-Control-Allow-Credentials": True,
+            'supports_credentials': True
+        },
+    },
+    supports_credentials = True,
+    expose_headers = "*"
+)
 
+app.config['UPLOAD_FOLDER'] = r'/*' # Change this to only the folder you want to save images to
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # Change this according to your file size
 import logging
 logging.getLogger('flask_cors').level = logging.DEBUG
 

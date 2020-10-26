@@ -7,12 +7,15 @@ from pymongo import MongoClient
 import swiftclient.service
 from swiftclient.service import SwiftService
 import datetime
+
 app = Flask(__name__)
 # CORS(app)
 from influxdb_client import InfluxDBClient
 
 globals()["INFLUXDB_URI"] = "http://141.115.103.33:9999"
 globals()["SWIFT_URI"] = "http://141.115.103.30"
+
+
 def build_preflight_response():
     response = make_response()
     response.headers.add("Access-Control-Allow-Origin", "*")
@@ -28,13 +31,13 @@ def build_actual_response(response):
 
 def get_id(mongodb_url):
     mongo_forid_co = MongoClient(mongodb_url)
-    return mongo_forid_co.stats.swift.find_one_and_update({"type": "object_id_file"},   {"$inc": {"object_id": 1}})[
-        "object_id"]
+    return mongo_forid_co.stats.swift.find_one_and_update({"type": "object_id_file"},
+                                                          {"$inc": {"object_id": 1}})["object_id"]
 
 
 def insert_datalake(file_content, user, key, authurl, container_name,
                     file_name=None, application=None, content_type=None,
-                    mongodb_url="127.0.0.1:27017", other_data = None ):
+                    mongodb_url="127.0.0.1:27017", other_data=None):
     '''
     Insert data in the datalake :
         - In Openstack Swift for data
@@ -90,7 +93,7 @@ def insert_datalake(file_content, user, key, authurl, container_name,
     meta_data["last_modified"] = datetime.datetime.now()
     meta_data["successful_operations"] = []
     meta_data["failed_operations"] = []
-    if meta_data is not None :
+    if meta_data is not None:
         meta_data["other_data"] = other_data
     print(meta_data)
 
@@ -101,7 +104,7 @@ def insert_datalake(file_content, user, key, authurl, container_name,
         try:
             conn.put_object(container_name, meta_data["swift_object_id"],
                             contents=file_content,
-                            content_type=meta_data["content_type"])#,
+                            content_type=meta_data["content_type"])  # ,
             # headers={"x-webhook":"yes"})
             # Insert metadata over the data : only if data has been put
             coll.insert_one(meta_data)
@@ -130,12 +133,14 @@ def insert_datalake(file_content, user, key, authurl, container_name,
             if retry > 3:
                 return None
 
+
 @app.after_request
 def append_cors_origin(response):
     response.headers.add("Access-Control-Allow-Origin", "*")
     response.headers.add('Access-Control-Allow-Headers', "*")
     response.headers.add('Access-Control-Allow-Methods', "*")
     return response
+
 
 @app.before_request
 def append_cors_origin(response):
@@ -144,37 +149,33 @@ def append_cors_origin(response):
     response.headers.add('Access-Control-Allow-Methods', "*")
     return response
 
+
 # @cross_origin()#supports_credentials=True)
 @app.route('/upload_file', methods=['POST'])
 def upload_file():
     user = 'test:tester'
     key = 'testing'
     authurl = globals()["SWIFT_URI"] + ":8080/auth/v1.0"
-    container_name= "test_ui-react"
+    container_name = "test_ui-react"
     # check if the post request has the file part
     if 'file' not in request.files:
         return jsonify(message="No file to upload")
     file = request.files["file"]
-    if file.filename=='':
+    if file.filename == '':
         flash('No selected file')
         return "No file"
     filename = secure_filename(file.filename)
 
     file.save(filename)
 
+    return jsonify(message="Ok")
 
-    
-    return jsonify(message= "Ok")
-
-
-
-        #return redirect(request.url)
+    # return redirect(request.url)
     # file = request.files['file']
     # with open("~/test.truc","w+") as fp :
     #     fp.write(file)
     # if user does not select file, browser also
     # submit an empty part without filename
-
 
     # if file.filename == '':
     #
@@ -201,12 +202,14 @@ def upload_file():
 @cross_origin()
 @app.route('/sensors_data', methods=['GET'])
 def get_influx_data_sensor(org="test", bucket="test"):
-
     influx_client = InfluxDBClient(url=globals()["INFLUXDB_URI"],
                                    token="dpVzJpGpdTiNhjHLKOWpXf8OlY-rZUwi4Cvd10kPU86upOKBRO_TA5R6PClkVKjGj_TIXQGAm5g27wDggHJHcw==",
-                                                 org=org)
+                                   org=org)
     query_api = influx_client.query_api()
-    query = 'from(bucket:"test")|> range(start: -141400080m)|> group() |> filter(fn:(r) => r._measurement == "humidity")' \
+    query = 'from(bucket:"test")' \
+            '|> range(start: -141400080m)' \
+            '|> group() ' \
+            '|> filter(fn:(r) => r._measurement == "humidity")' \
             '|> filter(fn:(r) => r.uri == "u4/302/humidity/ilot2")'
     result = query_api.query(org=org, query=query)
     results = {}
@@ -216,15 +219,21 @@ def get_influx_data_sensor(org="test", bucket="test"):
     for table in result:
         for record in table.records:
             if record["uri"] not in results:
-                results[record["uri"]]={"id":record["uri"],"values":[{"val_min":val_min, "val_max":val_max}]}
-            results[record["uri"]]["values"].append({"value":record.get_value(),"value_unit": record["value_units"], "date":datetime.datetime.timestamp(record["_time"]) })
-            if val_max is None or record.get_value() > val_max :
+                results[record["uri"]] = {"id": record["uri"], "values": [{"val_min": val_min, "val_max": val_max}]}
+            results[record["uri"]]["values"].append(
+                {
+                    "value": record.get_value(),
+                    "value_unit": record["value_units"],
+                    "date": datetime.datetime.timestamp(record["_time"])
+                }
+            )
+            if val_max is None or record.get_value() > val_max:
                 val_max = record.get_value()
-            if val_min is None or record.get_value()<val_min:
+            if val_min is None or record.get_value() < val_min:
                 val_min = record.get_value()
     for uri in results:
-        results[uri]["values"][0]["val_min"]=val_min
-        results[uri]["values"][0]["val_max"]=val_max
+        results[uri]["values"][0]["val_min"] = val_min
+        results[uri]["values"][0]["val_max"] = val_max
     return build_actual_response(jsonify(results))
 
 

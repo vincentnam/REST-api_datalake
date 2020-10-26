@@ -164,7 +164,7 @@ def append_cors_origin(response):
 
 
 
-# @cross_origin()#supports_credentials=True)
+@cross_origin(supports_credentials=True)
 @app.route('/upload_file', methods=['POST'])
 def upload_file():
     user = 'test:tester'

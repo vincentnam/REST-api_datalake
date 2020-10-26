@@ -233,4 +233,4 @@ def get_influx_data_sensor(org="test", bucket="test"):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', threaded=True)

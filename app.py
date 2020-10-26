@@ -39,7 +39,7 @@ def insert_datalake(file_content, user, key, authurl, container_name,
                     file_name=None, application=None, content_type=None,
                     mongodb_url="127.0.0.1:27017", other_data=None):
     '''
-    Insert data in the datalake :
+    Insert data in the datalake:
         - In Openstack Swift for data
         - In MongoDB for metadata
     :param file_content: the data to insert :
@@ -142,12 +142,7 @@ def append_cors_origin(response):
     return response
 
 
-@app.before_request
-def append_cors_origin(response):
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add('Access-Control-Allow-Headers', "*")
-    response.headers.add('Access-Control-Allow-Methods', "*")
-    return response
+
 
 
 # @cross_origin()#supports_credentials=True)

@@ -9,9 +9,9 @@ from swiftclient.service import SwiftService
 import datetime
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 from influxdb_client import InfluxDBClient
-
+app.config['CORS_HEADERS'] = 'Content-Type'
 globals()["INFLUXDB_URI"] = "http://141.115.103.33:9999"
 globals()["SWIFT_URI"] = "http://141.115.103.30"
 

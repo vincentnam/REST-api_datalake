@@ -10,9 +10,9 @@ import datetime
 
 app = Flask(__name__)
 # CORS(app, resources={r"/*": {"origins": "*"}})
-app.config['CORS_HEADERS'] = 'Content-Type'
+# app.config['CORS_HEADERS'] = 'Content-Type'
 
-cors = CORS(app, resources={r"/upload_file": {"origins": "http://localhost:5000"}})
+# cors = CORS(app, resources={r"/upload_file": {"origins": "http://localhost:5000"}})
 #
 #
 # def build_preflight_response():
@@ -44,7 +44,7 @@ cors = CORS(app, resources={r"/upload_file": {"origins": "http://localhost:5000"
 #     return response
 
 
-@cross_origin( supports_credentials=True)
+# @cross_origin( supports_credentials=True)
 @app.route('/upload_file', methods=['POST'])
 def upload_file():
     user = 'test:tester'

@@ -28,7 +28,7 @@ services:
                 aliases:
                     - flask_webapp
         ports:
-            - 5001:5001
+            - 5001:5000
 networks:
     rest-network:
       driver: bridge

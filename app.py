@@ -84,9 +84,9 @@ def crossdomain(origin=None, methods=None, headers=None,
      return update_wrapper(wrapped_function, f)
     return decorator
 
-# @cross_origin( supports_credentials=True)
+# @crossdomain(origin="*")
 @app.route('/upload_file', methods=['POST'])
-@crossdomain(origin="*")
+@cross_origin( supports_credentials=True)
 def upload_file():
     user = 'test:tester'
     key = 'testing'

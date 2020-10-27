@@ -42,7 +42,7 @@ def append_cors_origin(response):
     return response
 
 
-@cross_origin()#supports_credentials=True)
+@cross_origin( supports_credentials=True)
 @app.route('/upload_file')
 def upload_file():
     user = 'test:tester'

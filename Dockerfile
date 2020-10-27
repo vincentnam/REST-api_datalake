@@ -14,5 +14,5 @@ COPY . /.
 ENTRYPOINT [ "python" ]
 
 #CMD ["bash"]
-CMD [ "app.py" ]
+CMD [ "/app.py" ]
 

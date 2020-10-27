@@ -1,0 +1,36 @@
+version: '3'
+services:
+    nginx:
+        build:
+          context: nginx_reverseproxy/.
+          dockerfile: Dockerfile
+        container_name: nginx_reverseproxy
+        depends_on:
+            - flask
+
+        networks:
+            rest-network:
+               aliases:
+                  - reverse-proxy
+        ports:
+            - 8080:80
+    flask:
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        image: rest_api
+        container_name: rest_api
+        volumes:
+            - ./:/flask_code/
+        networks:
+            rest-network:
+                aliases:
+                    - flask_webapp
+        ports:
+            - 5000:5000
+networks:
+    rest-network:
+      driver: bridge
+      ipam:
+        config:
+          - subnet: 172.16.57.0/24

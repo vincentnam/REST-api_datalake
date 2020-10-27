@@ -42,7 +42,7 @@ def after_request(response):
 
 
 @cross_origin( supports_credentials=True)
-@app.route('/upload_file')
+@app.route('/upload_file', methods=['POST'])
 def upload_file():
     user = 'test:tester'
     key = 'testing'

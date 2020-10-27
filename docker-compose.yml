@@ -13,7 +13,8 @@ services:
                aliases:
                   - reverse-proxy
         ports:
-            - 8080:80
+            # 5000 / 3000 ports are the only ports open on the OSIRIM VM
+            - 5000:80
     flask:
         build:
             context: ./
@@ -27,7 +28,7 @@ services:
                 aliases:
                     - flask_webapp
         ports:
-            - 5000:5000
+            - 5001:5001
 networks:
     rest-network:
       driver: bridge

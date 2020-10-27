@@ -106,7 +106,7 @@ def upload_file():
 
     file.save(filename)
 
-    return jsonify(message="Ok")
+    # return jsonify(message="Ok")
 
 
 if __name__ == '__main__':

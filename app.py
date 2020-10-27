@@ -12,7 +12,7 @@ app = Flask(__name__)
 # CORS(app, resources={r"/*": {"origins": "*"}})
 # app.config['CORS_HEADERS'] = 'Content-Type'
 
-# cors = CORS(app, resources={r"/upload_file": {"origins": "http://localhost:5000"}})
+cors = CORS(app, resources={r"/upload_file": {"origins": "http://localhost:5000"}})
 #
 #
 # def build_preflight_response():

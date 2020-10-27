@@ -86,7 +86,10 @@ def crossdomain(origin=None, methods=None, headers=None,
 
 # @crossdomain(origin="*")
 @app.route('/upload_file', methods=['POST'])
-@cross_origin( supports_credentials=True)
+@cross_origin( supports_credentials=True,
+               headers=['DNT','User-Agent','X-Requested-With',
+                        'If-Modified-Since','Cache-Control',
+                        'Content-Type','Range'], origin="*")
 def upload_file():
     user = 'test:tester'
     key = 'testing'

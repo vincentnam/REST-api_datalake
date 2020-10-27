@@ -15,5 +15,5 @@ COPY ["app.py" , "/app/"]
 #CMD [ "/app.py" ]
 RUN apt-get install -y nginx
 COPY supervisord/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-CMD ["bash"]
-#CMD ["/usr/bin/supervisord"]
+#CMD ["bash"]
+CMD ["/usr/bin/supervisord"]

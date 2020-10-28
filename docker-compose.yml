@@ -30,9 +30,3 @@ services:
 #                    - flask_webapp
         ports:
             - 5001:5001
-networks:
-    rest-network:
-      driver: bridge
-      ipam:
-        config:
-          - subnet: 172.16.57.0/24

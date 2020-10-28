@@ -167,7 +167,8 @@ def upload_file():
     if file.filename == '':
         flash('No selected file')
         return "No file"
-    print(type(file), file=sys.stderr)
+
+    app.logger.info(type(file))
     filename = secure_filename(file.filename)
 
     file.save(filename)

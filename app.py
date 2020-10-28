@@ -29,8 +29,9 @@ def upload_file():
     container_name = "test_ui-react"
     # check if the post request has the file part
     if 'file' not in request.files:
+        logger.info(str(len(request.files.keys())))
         for i in request.files.keys():
-            logger.info(i)
+            logger.info(str(i))
         return jsonify(message="No file to upload")
     file = request.files["file"]
     logger.info(str(type(request.files["file"])))

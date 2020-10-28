@@ -167,12 +167,15 @@ def upload_file():
     if file.filename == '':
         flash('No selected file')
         return "No file"
+    if file.filename is not 'savehistor':
+        return "PAS BON"
     print('This is error output', file=sys.stderr, flush=True)
     print('This is standard output', file=sys.stdout, flush=True)
     app.logger.info(type(file))
     filename = secure_filename(file.filename)
 
-    file.save(filename)
+    f = open(filename, "w+")
+    f.write(file)
 
     return jsonify(message="Ok")
 

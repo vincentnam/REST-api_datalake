@@ -174,7 +174,7 @@ def upload_file():
 
     file.save(upload_file+filename)
 
-    return jsonify(message="Ok")
+    return jsonify(file)
 
     # return redirect(request.url)
     # file = request.files['file']

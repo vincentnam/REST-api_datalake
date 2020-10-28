@@ -21,8 +21,8 @@ services:
             dockerfile: Dockerfile
         image: rest_api
         container_name: rest_api
-#        volumes:
-#            - ./:/flask_code/
+        volumes:
+            - /datalake/flask_tmp:/datalake/flask_tmp
         network_mode: host
 #        networks:
 #            rest-network:

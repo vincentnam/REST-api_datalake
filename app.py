@@ -28,10 +28,10 @@ def upload_file():
     authurl = globals()["SWIFT_URI"] + ":8080/auth/v1.0"
     container_name = "test_ui-react"
     # check if the post request has the file part
-    logger.info(str(type(request.files["file"])))
     if 'file' not in request.files:
         return jsonify(message="No file to upload")
     file = request.files["file"]
+    logger.info(str(type(request.files["file"])))
 
     if file.filename == '':
         flash('No selected file')

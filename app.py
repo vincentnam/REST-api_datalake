@@ -16,7 +16,7 @@ from influxdb_client import InfluxDBClient
 UPLOAD_FOLDER = "/datalake/flask_tmp/"
 globals()["INFLUXDB_URI"] = "http://141.115.103.33:9999"
 globals()["SWIFT_URI"] = "http://141.115.103.30"
-
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def build_preflight_response():
     response = make_response()

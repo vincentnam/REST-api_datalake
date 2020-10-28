@@ -10,10 +10,10 @@ RUN pip install --upgrade pip
 RUN pip install -r /app/requirements.txt
 COPY ["app.py" , "/app/"]
 
-#ENTRYPOINT [ "python" ]
+ENTRYPOINT [ "python" ]
 
-#CMD [ "/app.py" ]
+CMD [ "/app/app.py" ]
 RUN apt-get install -y nginx
 COPY supervisord/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 #CMD ["bash"]
-CMD ["/usr/bin/supervisord"]
+#CMD ["/usr/bin/supervisord"]

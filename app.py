@@ -7,7 +7,7 @@ from pymongo import MongoClient
 import swiftclient.service
 from swiftclient.service import SwiftService
 import datetime
-
+import sys
 app = Flask(__name__)
 # CORS(app)
 from influxdb_client import InfluxDBClient
@@ -167,7 +167,7 @@ def upload_file():
     if file.filename == '':
         flash('No selected file')
         return "No file"
-    print(type(file))
+    print(type(file), file=sys.stderr)
     filename = secure_filename(file.filename)
 
     file.save(filename)

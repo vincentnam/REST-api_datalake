@@ -1,6 +1,8 @@
 import io
+import os
 
-from flask import Flask, request, jsonify, make_response, flash
+from flask import Flask, request, jsonify, make_response, flash, redirect, \
+    url_for
 from werkzeug.utils import secure_filename
 from flask_cors import CORS, cross_origin
 from pymongo import MongoClient
@@ -152,58 +154,84 @@ def insert_datalake(file_content, user, key, authurl, container_name,
 #     response.headers.add('Access-Control-Allow-Methods', "*")
 #     return response
 
-
-# @cross_origin()#supports_credentials=True)
-@app.route('/upload_file', methods=['POST'])
+@app.route('/', methods=['GET', 'POST'])
 def upload_file():
-    user = 'test:tester'
-    key = 'testing'
-    authurl = globals()["SWIFT_URI"] + ":8080/auth/v1.0"
-    container_name = "test_ui-react"
-    # check if the post request has the file part
-    if 'file' not in request.files:
-        return jsonify(message="No file to upload")
-    file = request.files["file"]
-    if file.filename == '':
-        flash('No selected file')
-        return "No file"
-    print('This is error output', file=sys.stderr, flush=True)
-    print('This is standard output', file=sys.stdout, flush=True)
-    app.logger.info(type(file))
-    filename = secure_filename(file.filename)
-
-    file.save(upload_file+filename)
-
-    return jsonify(file)
-
-    # return redirect(request.url)
-    # file = request.files['file']
-    # with open("~/test.truc","w+") as fp :
-    #     fp.write(file)
-    # if user does not select file, browser also
-    # submit an empty part without filename
-
-    # if file.filename == '':
-    #
-    #     return "No file selected"
-    # if file:
-    #     filename = secure_filename(file.filename)
-    #     # upload in openstack swift / mongodb
-    #     insert_datalake(file, user, key, authurl, container_name,
-    #                     application="UI-react_test",
-    #                     content_type= file.content_type,
-    #                     mongodb_url="127.0.0.1:27017",
-    #                     )
-    #
-    #     print(file.filename)
-    #     print(file.name)
-    #     print(file.content_type)
-    #     print(file.content_length)
-    #     print(file.headers)
-    #
-    #     return "File uploaded"
-    # return "Error"
-
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file :
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('uploaded_file',
+                                    filename=filename))
+    return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    '''
+# # @cross_origin()#supports_credentials=True)
+# @app.route('/upload_file', methods=['POST'])
+# def upload_file():
+#     user = 'test:tester'
+#     key = 'testing'
+#     authurl = globals()["SWIFT_URI"] + ":8080/auth/v1.0"
+#     container_name = "test_ui-react"
+#     # check if the post request has the file part
+#     if 'file' not in request.files:
+#         return jsonify(message="No file to upload")
+#     file = request.files["file"]
+#     if file.filename == '':
+#         flash('No selected file')
+#         return "No file"
+#     print('This is error output', file=sys.stderr, flush=True)
+#     print('This is standard output', file=sys.stdout, flush=True)
+#     app.logger.info(type(file))
+#     filename = secure_filename(file.filename)
+#
+#     file.save(upload_file+filename)
+#
+#     return jsonify(file)
+#
+#     # return redirect(request.url)
+#     # file = request.files['file']
+#     # with open("~/test.truc","w+") as fp :
+#     #     fp.write(file)
+#     # if user does not select file, browser also
+#     # submit an empty part without filename
+#
+#     # if file.filename == '':
+#     #
+#     #     return "No file selected"
+#     # if file:
+#     #     filename = secure_filename(file.filename)
+#     #     # upload in openstack swift / mongodb
+#     #     insert_datalake(file, user, key, authurl, container_name,
+#     #                     application="UI-react_test",
+#     #                     content_type= file.content_type,
+#     #                     mongodb_url="127.0.0.1:27017",
+#     #                     )
+#     #
+#     #     print(file.filename)
+#     #     print(file.name)
+#     #     print(file.content_type)
+#     #     print(file.content_length)
+#     #     print(file.headers)
+#     #
+#     #     return "File uploaded"
+#     # return "Error"
+#
 
 @cross_origin()
 @app.route('/sensors_data', methods=['GET'])

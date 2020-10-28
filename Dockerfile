@@ -4,7 +4,7 @@ RUN apt-get update -y
 # We copy just the requirements.txt first to leverage Dockerv cache
 COPY ./requirements.txt /app/requirements.txt
 #WORKDIR /app
-RUN mkdir /flask_tmp && mkdir /app
+RUN mkdir /flask_tmp
 RUN pip install --upgrade pip
 RUN pip install -r /app/requirements.txt
 COPY ["app.py" , "/app/"]

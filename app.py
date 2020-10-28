@@ -11,7 +11,7 @@ import datetime
 app = Flask(__name__)
 # CORS(app)
 from influxdb_client import InfluxDBClient
-
+UPLOAD_FOLDER = "/datalake/flask_tmp"
 globals()["INFLUXDB_URI"] = "http://141.115.103.33:9999"
 globals()["SWIFT_URI"] = "http://141.115.103.30"
 
@@ -167,6 +167,7 @@ def upload_file():
     if file.filename == '':
         flash('No selected file')
         return "No file"
+    print(type(file))
     filename = secure_filename(file.filename)
 
     file.save(filename)

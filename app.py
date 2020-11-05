@@ -7,11 +7,12 @@ import sys
 app = Flask(__name__)
 from requests_toolbelt.multipart import decoder
 UPLOAD_FOLDER = "/datalake/flask_tmp"
+app.config["UPLOAD_FOLDER"]=UPLOAD_FOLDER
 globals()["INFLUXDB_URI"] = "http://141.115.103.33:9999"
 globals()["SWIFT_URI"] = "http://141.115.103.30"
 from flask_cors import CORS, cross_origin
 
-CORS(app)
+# CORS(app)
 from werkzeug.datastructures import ImmutableMultiDict
 
 
@@ -26,6 +27,9 @@ logger = logging.getLogger('HELLO WORLD')
 def log_request_info():
     app.logger.debug('Headers: %s', request.headers)
     app.logger.debug('Body: %s', request.get_data())
+    app.logger.debug('Body: %s', request.form)
+
+
 #
 # @cross_origin()
 # @app.route('/upload_file', methods=['POST', 'OPTIONS'])
